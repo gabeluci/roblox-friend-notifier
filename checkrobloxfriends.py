@@ -86,15 +86,30 @@ elif r.status_code == 200:
 	new_result.data = data
 	online = []
 	for user in data:
-		online.append(user["name"])
+		online.append(user["id"])
 	wasonline = []
 	for user in last_result.data:
-		wasonline.append(user["name"])
+		wasonline.append(user["id"])
 	online.sort()
 	wasonline.sort()
 	if online != wasonline:
 		if online:
-			send_email("Roblox notifier", " is online\n".join(online) + " is online")
+			# We only have the friends' ID's, so now we go get their names
+			fr = requests.get("https://friends.roblox.com/v1/users/" + str(roblox_userid) + "/friends", cookies=roblox_cookie)
+			onlinefriends = []
+			if fr.status_code == 200:
+				friends = fr.json()["data"]
+				for friend in friends:
+					if next((id for id in online if id == friend["id"]), None) != None:
+						onlinefriends.append(friend["name"])
+					if len(onlinefriends) == len(online):
+						break
+			else:
+				# If we couldn't get the list of friends for whatever reason, just use the id's
+				onlinefriends = online
+			
+			print(onlinefriends)
+			send_email("Roblox notifier", " is online\n".join(onlinefriends) + " is online")
 		else:
 			send_email("Roblox notifier", "No one is online anymore")
 elif r.status_code != 429:
