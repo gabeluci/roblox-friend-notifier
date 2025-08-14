@@ -79,8 +79,9 @@ new_result.status_code = r.status_code
 
 print("Roblox status code: " + str(r.status_code))
 
-if r.status_code == 401 and last_result.status_code != 401:
-	send_email("Roblox notifier error","Needs new cookie")
+if r.status_code == 401:
+    if last_result.status_code != 401:
+        send_email("Roblox notifier error","Needs new cookie")
 elif r.status_code == 200:
 	data = r.json()["data"]
 	new_result.data = data
