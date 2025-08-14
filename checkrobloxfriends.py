@@ -96,7 +96,10 @@ elif r.status_code == 200:
 	if online != wasonline:
 		if online:
 			# We only have the friends' ID's, so now we go get their names
-			fr = requests.get("https://friends.roblox.com/v1/users/" + str(roblox_userid) + "/friends", cookies=roblox_cookie)
+                        idrequestdata = {}
+                        idrequestdata["userIds"] = online
+                        idrequestdata["excludeBannedUsers"] = True
+                        fr = requests.post("https://users.roblox.com/v1/users", json=idrequestdata, cookies=roblox_cookie)
 			onlinefriends = []
 			if fr.status_code == 200:
 				friends = fr.json()["data"]
