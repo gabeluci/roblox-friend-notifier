@@ -63,14 +63,14 @@ def send_email(subject, message):
     return False
 
 class Result(object):
-	status_code = 200
-	data = []
+    status_code = 200
+    data = []
 
 if os.path.exists(pickle_file):
-	with open(pickle_file,"rb") as fi:
-		last_result = pickle.load(fi)
+    with open(pickle_file,"rb") as fi:
+        last_result = pickle.load(fi)
 else:
-	last_result = Result()
+    last_result = Result()
 
 r = requests.get("https://friends.roblox.com/v1/users/" + str(roblox_userid) + "/friends/online", cookies=roblox_cookie)
 
@@ -83,42 +83,42 @@ if r.status_code == 401:
     if last_result.status_code != 401:
         send_email("Roblox notifier error","Needs new cookie")
 elif r.status_code == 200:
-	data = r.json()["data"]
-	new_result.data = data
-	online = []
-	for user in data:
-		online.append(user["id"])
-	wasonline = []
-	for user in last_result.data:
-		wasonline.append(user["id"])
-	online.sort()
-	wasonline.sort()
-	if online != wasonline:
-		if online:
-			# We only have the friends' ID's, so now we go get their names
-                        idrequestdata = {}
-                        idrequestdata["userIds"] = online
-                        idrequestdata["excludeBannedUsers"] = True
-                        fr = requests.post("https://users.roblox.com/v1/users", json=idrequestdata, cookies=roblox_cookie)
-			onlinefriends = []
-			if fr.status_code == 200:
-				friends = fr.json()["data"]
-				for friend in friends:
-					if next((id for id in online if id == friend["id"]), None) != None:
-						onlinefriends.append(friend["name"])
-					if len(onlinefriends) == len(online):
-						break
-			else:
-				# If we couldn't get the list of friends for whatever reason, just use the id's
-				onlinefriends = online
-			
-			print(onlinefriends)
-			send_email("Roblox notifier", " is online\n".join(onlinefriends) + " is online")
-		else:
-			send_email("Roblox notifier", "No one is online anymore")
+    data = r.json()["data"]
+    new_result.data = data
+    online = []
+    for user in data:
+        online.append(user["id"])
+    wasonline = []
+    for user in last_result.data:
+        wasonline.append(user["id"])
+    online.sort()
+    wasonline.sort()
+    if online != wasonline:
+        if online:
+            # We only have the friends' ID's, so now we go get their names
+            idrequestdata = {}
+            idrequestdata["userIds"] = online
+            idrequestdata["excludeBannedUsers"] = True
+            fr = requests.post("https://users.roblox.com/v1/users", json=idrequestdata, cookies=roblox_cookie)
+            onlinefriends = []
+            if fr.status_code == 200:
+                friends = fr.json()["data"]
+                for friend in friends:
+                    if next((id for id in online if id == friend["id"]), None) != None:
+                        onlinefriends.append(friend["name"])
+                    if len(onlinefriends) == len(online):
+                        break
+            else:
+                # If we couldn't get the list of friends for whatever reason, just use the id's
+                onlinefriends = online
+            
+            print(onlinefriends)
+            send_email("Roblox notifier", " is online\n".join(onlinefriends) + " is online")
+        else:
+            send_email("Roblox notifier", "No one is online anymore")
 elif r.status_code != 429:
-	send_email("Roblox notifier error", "Status code: " + str(r.status_code) + "\nData:\n\n" + str(r.json()))
+    send_email("Roblox notifier error", "Status code: " + str(r.status_code) + "\nData:\n\n" + str(r.json()))
 
 with open(pickle_file, "wb") as fi:
-	pickle.dump(new_result, fi)
+    pickle.dump(new_result, fi)
 
