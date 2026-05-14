@@ -2,6 +2,7 @@ import sys,requests,smtplib,pickle,os.path
 from email.message import EmailMessage
 
 # =============== CHANGE THESE SETTINGS ==================
+# ======== UNLESS YOU'RE USING GITHUB ACTIONS ============
 
 # Get this cookie value from your browser after logging in.
 # If you don't know how, see this: https://devforum.roblox.com/t/how-to-use-the-roblox-web-api-endpoints/1829973#how-to-get-roblox-security-cookie-5
@@ -35,6 +36,24 @@ pickle_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkrob
 
 # =============== END OF SETTINGS ==================
 
+
+# When using GitHub Actions, all of these secrets need to be set
+if (os.getenv("ROBLOX_COOKIE")):
+    roblox_cookie = {".ROBLOSECURITY": str(os.getenv("ROBLOX_COOKIE"))}
+if (os.getenv("ROBLOX_USER_ID")):
+    roblox_userid = int(os.getenv("ROBLOX_USER_ID", roblox_userid))
+if (os.getenv("SMTP_SERVER")):
+    smtp_server = os.getenv("SMTP_SERVER", smtp_server)
+if (os.getenv("SMTP_PORT")):
+    smpt_port = int(os.getenv("SMTP_PORT", smpt_port))
+if (os.getenv("SMTP_USERNAME")):
+    smtp_username = os.getenv("SMTP_USERNAME")
+if (os.getenv("SMTP_PASSWORD")):
+    smtp_password = os.getenv("SMTP_PASSWORD")
+if (os.getenv("SMTP_FROM_ADDRESS")):
+    from_address = os.getenv("SMTP_FROM_ADDRESS")
+if (os.getenv("SMTP_TO_ADDRESS")):
+    to_address = os.getenv("SMTP_TO_ADDRESS")
 
 def send_email(subject, message):
     try:
