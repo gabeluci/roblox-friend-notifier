@@ -135,6 +135,8 @@ elif r.status_code == 200:
             send_email("Roblox notifier", " is online\n".join(onlinefriends) + " is online")
         else:
             send_email("Roblox notifier", "No one is online anymore")
+    elif last_result.status_code != 200:
+        send_email("Roblox notifier is working again", "No one is online")
 elif r.status_code != 429:
     send_email("Roblox notifier error", "Status code: " + str(r.status_code) + "\nData:\n\n" + str(r.json()))
 
