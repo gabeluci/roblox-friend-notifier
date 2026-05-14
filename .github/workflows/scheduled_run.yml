@@ -1,8 +1,6 @@
-name: Run script every 15 mins
+name: Check my friends
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
