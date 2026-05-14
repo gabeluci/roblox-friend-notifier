@@ -1,4 +1,4 @@
-import sys,requests,smtplib,pickle,os.path
+import sys,json,requests,smtplib,pickle,os.path
 from email.message import EmailMessage
 
 # =============== CHANGE THESE SETTINGS ==================
@@ -91,6 +91,8 @@ if os.path.exists(pickle_file):
 else:
     last_result = Result()
 
+print("Last result: " + json.dumps(last_result.__dict__))
+
 r = requests.get("https://friends.roblox.com/v1/users/" + str(roblox_userid) + "/friends/online", cookies=roblox_cookie)
 
 new_result = Result()
@@ -99,6 +101,7 @@ new_result.status_code = r.status_code
 print("Roblox status code: " + str(r.status_code))
 
 if r.status_code == 401:
+    print("Unauthorized. Check your cookie.")
     if last_result.status_code != 401:
         send_email("Roblox notifier error","Needs new cookie")
 elif r.status_code == 200:
@@ -131,13 +134,18 @@ elif r.status_code == 200:
                 # If we couldn't get the list of friends for whatever reason, just use the id's
                 onlinefriends = online
             
-            print(onlinefriends)
+            print("New friends online: " + ", ".join(onlinefriends))
             send_email("Roblox notifier", " is online\n".join(onlinefriends) + " is online")
         else:
+            print("No one is online anymore")
             send_email("Roblox notifier", "No one is online anymore")
     elif last_result.status_code != 200:
+        print("We were broke but now we're not. No one is online though.")
         send_email("Roblox notifier is working again", "No one is online")
+    else:
+        print("No change since last time")
 elif r.status_code != 429:
+    print("Got 429. Take a break.")
     send_email("Roblox notifier error", "Status code: " + str(r.status_code) + "\nData:\n\n" + str(r.json()))
 
 with open(pickle_file, "wb") as fi:
