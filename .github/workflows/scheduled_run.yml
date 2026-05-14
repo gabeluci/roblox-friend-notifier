@@ -27,7 +27,9 @@ jobs:
         uses: actions/cache@v5
         with:
           path: checkrobloxfriends.pk
-          key: checkrobloxfriends-pk
+          key: checkrobloxfriends-pk-${{ github.run_id }}
+          restore-keys: |
+            checkrobloxfriends-pk-
 
       - name: Run script
         env:
